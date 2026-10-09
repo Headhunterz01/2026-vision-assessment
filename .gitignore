@@ -13,6 +13,7 @@
 
 # Large media distributed separately as GitHub Release assets
 /00_题目原件/videos/*.mp4
+/01_神经网络/results/*.avi
 /04_EKF/results/*.mp4
 /05_坐标变换/results/*.mp4
 /06_重投影/results/*.mp4
