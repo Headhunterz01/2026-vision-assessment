@@ -1,0 +1,18 @@
+# Python environments and caches
+**/.venv/
+**/__pycache__/
+*.py[cod]
+
+# ROS 2 / colcon build products and downloaded SDKs
+/ros2_ws/build/
+/ros2_ws/install/
+/ros2_ws/install_ekf/
+/ros2_ws/log/
+/ros2_ws/deps/
+/ros2_ws/output/
+
+# Large media distributed separately as GitHub Release assets
+/00_题目原件/videos/*.mp4
+/04_EKF/results/*.mp4
+/05_坐标变换/results/*.mp4
+/06_重投影/results/*.mp4

@@ -1,0 +1,6 @@
+# Direct Python dependencies for offline analysis and verification tools.
+matplotlib==3.11.2
+numpy==2.5.3
+opencv-python==5.0.0.93
+PyYAML==6.0.3
+pyserial==3.5
