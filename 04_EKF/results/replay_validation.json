@@ -1,0 +1,17 @@
+{
+  "legacy_replay_matches_original_frames": 3150,
+  "direct_inference_matches_motion_replay_frames": 750,
+  "video_frames": 3150,
+  "video_source_timestamp_stride": 2,
+  "compared_fields": [
+    "frame",
+    "track_id",
+    "visual_track_id",
+    "detection_valid",
+    "measurement_used",
+    "filtered_yaw",
+    "observed_yaw",
+    "yaw_rate",
+    "selected_detection_index"
+  ]
+}

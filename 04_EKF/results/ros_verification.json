@@ -1,0 +1,12 @@
+{
+  "messages": 300,
+  "detections": 213,
+  "measurements_used": 212,
+  "annotated_images": 299,
+  "tracks": 78,
+  "visual_tracks": 76,
+  "visual_switch_events": 77,
+  "filter_reset_events": 77,
+  "observed_output_hz": 14.524642696495645,
+  "checks": "timestamps, frame, corners, pose/quaternion, yaw, covariance, visual identity/switch/reset, annotated image"
+}

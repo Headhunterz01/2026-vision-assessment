@@ -1,0 +1,7 @@
+armor_ekf:
+  ros__parameters:
+    yaw_frame: odom
+    min_world_horizontal_normal: 0.001
+    # Static frame defaults are centralized in coordinate_transform.hpp.
+    # Override odom_gimbal_xyz/rpy, gimbal_camera_xyz/rpy or camera_optical_xyz/rpy
+    # here to change BOTH the computation and published TF from the same values.

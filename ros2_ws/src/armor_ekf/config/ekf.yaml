@@ -1,0 +1,21 @@
+armor_ekf:
+  ros__parameters:
+    confidence: 0.5
+    armor_width: 0.135
+    armor_height: 0.055
+    corner_order: [0, 1, 2, 3]
+    camera_matrix: [3571.1890927935297, 0.0, 683.5999418028833,
+                    0.0, 3569.0234714126823, 565.5838917436471,
+                    0.0, 0.0, 1.0]
+    distortion: [-0.029757126887136703, 0.371503828585697,
+                 0.0011898367108863406, -0.0025516396408119418, 0.0]
+    max_reprojection_error: 3.0
+    measurement_std: 0.08
+    acceleration_std: 8.0
+    reset_timeout: 0.3
+    association_gate_scale: 0.8
+    association_mode: motion
+    target_switch_timeout: 0.08
+    inference_threads: 2
+    publish_debug: true
+    image_topic: /armor/image_raw

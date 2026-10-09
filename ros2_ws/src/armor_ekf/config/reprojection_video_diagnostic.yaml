@@ -1,0 +1,9 @@
+armor_ekf:
+  ros__parameters:
+    yaw_frame: odom
+    enable_reprojection: true
+    robot_radius: 0.25
+    model_pitch: 0.2617993877991494
+    model_roll: 0.0
+    # Diagnostic for test.mp4 only. NOT a measured calibration or PDF replacement.
+    odom_gimbal_rpy: [0.0, 0.0, 0.0]
