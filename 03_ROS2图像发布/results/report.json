@@ -1,0 +1,9 @@
+{
+  "messages": 100,
+  "detections": 100,
+  "measurements_used": 100,
+  "annotated_images": 99,
+  "tracks": 1,
+  "observed_output_hz": 11.51254052224185,
+  "checks": "timestamps, frame, corners, pose/quaternion, yaw, covariance, annotated image"
+}
