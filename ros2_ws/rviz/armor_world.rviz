@@ -1,0 +1,110 @@
+Panels:
+- Class: rviz_common/Displays
+  Help Height: 70
+  Name: Displays
+  Property Tree Widget:
+    Expanded:
+    - /Global Options1
+    - /TF Chain1
+    - /World Armor1
+    - /World Yaw Image1
+    Splitter Ratio: 0.5
+  Tree Height: 144
+- Class: rviz_common/Views
+  Expanded:
+  - /Current View1
+  Name: Views
+  Splitter Ratio: 0.5
+Visualization Manager:
+  Class: ''
+  Displays:
+  - Class: rviz_default_plugins/Image
+    Enabled: true
+    Max Value: 1
+    Median window: 5
+    Min Value: 0
+    Name: World Yaw Image
+    Normalize Range: true
+    Topic:
+      Depth: 5
+      Durability Policy: Volatile
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Transport Override: ''
+      Value: /armor/world/image_raw
+    Value: true
+  - Class: rviz_default_plugins/TF
+    Enabled: true
+    Name: TF Chain
+    Show Arrows: true
+    Show Axes: true
+    Show Names: true
+    Marker Scale: 0.4
+    Frame Timeout: 15
+    Frames:
+      All Enabled: true
+    Value: true
+  - Class: rviz_default_plugins/MarkerArray
+    Enabled: true
+    Name: World Armor
+    Namespaces: {}
+    Topic:
+      Depth: 10
+      Durability Policy: Volatile
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Value: /armor/world_markers
+    Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+  - Class: rviz_default_plugins/Interact
+    Hide Inactive Objects: true
+  - Class: rviz_default_plugins/Select
+  - Class: rviz_default_plugins/FocusCamera
+  - Class: rviz_default_plugins/Measure
+    Line color: 128; 128; 0
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 6.0
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0.25
+        Y: 0.0
+        Z: -1.75
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.4
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.6
+    Saved: null
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 900
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Views:
+    collapsed: false
+  Width: 1400
+  X: 0
+  Y: 0
+  World Yaw Image:
+    collapsed: false

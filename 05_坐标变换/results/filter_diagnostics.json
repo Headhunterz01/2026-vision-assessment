@@ -1,0 +1,13 @@
+{
+  "same_visual_identity_adjacent_pairs": 2057,
+  "camera_median_abs_step_rad": 0.07894438767100004,
+  "world_median_abs_step_rad": 0.03440702112000027,
+  "camera_steps_over_0_4_rad": 21,
+  "world_steps_over_0_4_rad": 86,
+  "world_ekf_rejection_events": 184,
+  "world_filter_resets": 237,
+  "world_visual_switches": 216,
+  "camera_ekf_rejection_events": 17,
+  "camera_filter_resets": 217,
+  "note": "Same selected detections and PnP solutions throughout this video. Coordinate-dependent heading variation increases under the task extrinsics; unchanged EKF gates reject more observations. No yaw or physical identity ground truth."
+}

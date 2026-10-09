@@ -1,0 +1,94 @@
+{
+  "stage": "preparation_only",
+  "checks": [
+    "optical_axis_mapping",
+    "proper_rotations",
+    "sequential_vs_composed",
+    "point_round_trip",
+    "known_world_yaw_and_camera_rotation"
+  ],
+  "status": "PASS",
+  "convention": "T_parent_child maps child coordinates to parent; p_parent = R_parent_child p_child + t_parent_child; R = Rz(yaw) Ry(pitch) Rx(roll)",
+  "static_transforms": [
+    {
+      "parent": "odom",
+      "child": "gimbal_link",
+      "xyz_m": [
+        0,
+        0,
+        0
+      ],
+      "rpy_rad": [
+        0,
+        1.34,
+        0
+      ]
+    },
+    {
+      "parent": "gimbal_link",
+      "child": "camera_link",
+      "xyz_m": [
+        0.0461892,
+        0,
+        -0.0603874
+      ],
+      "rpy_rad": [
+        0,
+        0.091,
+        0
+      ]
+    },
+    {
+      "parent": "camera_link",
+      "child": "camera_optical_frame",
+      "xyz_m": [
+        0,
+        0,
+        0
+      ],
+      "rpy_rad": [
+        -1.5707963267948966,
+        0,
+        -1.5707963267948966
+      ]
+    }
+  ],
+  "T_odom_camera_optical_frame": [
+    [
+      8.532201890627252e-18,
+      -0.990244396867397,
+      0.13934143128561977,
+      -0.04822029122274544
+    ],
+    [
+      -1.0,
+      3.749399456654644e-33,
+      6.123233995736766e-17,
+      0.0
+    ],
+    [
+      -6.063498154986296e-17,
+      -0.1393414312856198,
+      -0.9902443968673971,
+      -0.058778259499526
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "sample_optical_point_m": [
+    0.04,
+    0.08,
+    3.5
+  ],
+  "sample_odom_point_m": [
+    0.360255166527532,
+    -0.039999999999999786,
+    -3.535780963038265
+  ],
+  "max_synthetic_yaw_error_rad": 1.1102230246251565e-16,
+  "limitations": "Algebra checks only; no C++ pipeline, TF publication, real-video accuracy, or ROS message integration validated yet."
+}

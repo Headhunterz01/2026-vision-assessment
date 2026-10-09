@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "messages": 300,
+  "detections": 234,
+  "measurements_used": 227,
+  "annotated_images": 300,
+  "visual_tracks": 57,
+  "visual_switch_events": 82,
+  "filter_reset_events": 83,
+  "tf_checks": 300,
+  "marker_arrays": 300,
+  "marker_pose_checks": 234,
+  "source_timestamp_matches": 300,
+  "max_inverse_transform_pnp_component_error": 4.756416105422545e-07,
+  "observed_output_hz": 11.418183302224868,
+  "checks": "odom header, original image stamps, live TF2 chain vs baseline, world pose/yaw, inverse transform vs both PnP candidates, covariance, resets, markers, optical-frame images"
+}

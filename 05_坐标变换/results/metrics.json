@@ -1,0 +1,14 @@
+{
+  "yaw_frame": "odom",
+  "frames": 3150,
+  "selected_pose_frames": 2280,
+  "selected_target_observation_fraction": 0.7238095238095238,
+  "measurements_used": 2116,
+  "measurement_fraction_when_detected": 0.9280701754385965,
+  "track_resets": 237,
+  "visual_track_switches": 216,
+  "median_reprojection_error_px": 0.34762693528849997,
+  "median_abs_raw_step_rad": 0.03434799393499999,
+  "median_abs_filtered_step_rad": 0.021722134049999786,
+  "note": "No ground truth. Step metrics include actual motion and do not measure yaw accuracy."
+}
