@@ -1,6 +1,6 @@
 # Python 辅助工具环境
 
-此目录只保存依赖清单和环境验证脚本；虚拟环境本身不纳入仓库。资料根目录运行：
+此目录只保存依赖清单和环境验证脚本；虚拟环境本身不纳入仓库。依赖清单包含 OpenVINO Python wheel，它同时提供考核一 C++ 推理示例构建需要的 OpenVINO CMake 配置、头文件和运行库。资料根目录运行：
 
 ```bash
 python3 -m venv python_env/.venv
@@ -15,4 +15,4 @@ python_env/.venv/bin/python python_env/verify_environment.py
 python_env/.venv/bin/python -m pip check
 ```
 
-退出环境使用 `deactivate`。Python 清单只用于离线分析、画图及串口环境检查；ROS 2、`cv_bridge`、OpenCV C++、Eigen 和 colcon 通过 Ubuntu/ROS apt 包安装，见 [`ros2_ws/README.md`](../ros2_ws/README.md)。ROS 节点使用系统 ROS Python 环境，不要从此 venv 启动。
+退出环境使用 `deactivate`。Python 清单用于离线分析、画图、串口环境检查和 OpenVINO C++ 示例依赖；ROS 2、`cv_bridge`、OpenCV C++、Eigen 和 colcon 通过 Ubuntu/ROS apt 包安装，见 [`ros2_ws/README.md`](../ros2_ws/README.md)。ROS 节点使用系统 ROS Python 环境，不要从此 venv 启动。
