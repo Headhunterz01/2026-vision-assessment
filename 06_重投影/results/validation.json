@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "frames": 3150,
+  "valid_model_frames": 2280,
+  "missing_model_frames": 870,
+  "unchanged_world_ekf": false,
+  "direct_inference_agreement_frames": 0,
+  "max_world_camera_transform_component_error": 1.7763568394002505e-15,
+  "max_radius_error_m": 4.718447854656915e-16,
+  "max_independent_projection_error_px": 2.2737367544323206e-13,
+  "anchor_rms_error_median_px": 0.31398814430526334,
+  "anchor_rms_error_p95_px": 0.7747092403736905,
+  "total_in_image_plates": 9120,
+  "total_front_facing_plates": 4560,
+  "measured_anchor_pitch_median_deg": -15.645629125748805,
+  "model_other_plate_outward_pitch_deg": -15,
+  "other_detection_model_pairs": 959,
+  "other_plate_iou_median": 0.5338489218808612,
+  "other_plate_center_error_median_px": 14.604989051818848,
+  "other_plate_center_error_p90_px": 24.901311492919927,
+  "other_plate_pairs_over_100px": 0,
+  "comparison_limit": "Distinct maximum-IoU matching to other same-frame YOLO detections; no physical plate IDs, occlusion or ground truth. In-image does not imply physically visible."
+}

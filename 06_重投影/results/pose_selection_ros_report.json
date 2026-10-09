@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "messages": 300,
+  "detections": 288,
+  "measurements_used": 288,
+  "annotated_images": 300,
+  "visual_tracks": 24,
+  "visual_switch_events": 23,
+  "filter_reset_events": 24,
+  "tf_checks": 300,
+  "marker_arrays": 300,
+  "marker_pose_checks": 288,
+  "source_timestamp_matches": 300,
+  "max_inverse_transform_pnp_component_error": 4.078864304091212e-07,
+  "observed_output_hz": 12.751849158419637,
+  "projection_pose_checks": 288,
+  "missing_projection_clear_checks": 12,
+  "checks": "4 model poses, fixed geometry, inward/outward pitch bridge, empty poses and DELETE markers on dropout; odom header, original image stamps, live TF2 chain vs baseline, world pose/yaw, inverse transform vs both PnP candidates, covariance, resets, markers, optical-frame images"
+}
