@@ -4,7 +4,7 @@
 
 - 检测、PnP 和关联：[pipeline.cpp](../ros2_ws/src/armor_ekf/src/pipeline.cpp)、[motion_tracker.hpp](../ros2_ws/src/armor_ekf/include/armor_ekf/motion_tracker.hpp)
 - Yaw EKF：[yaw_ekf.hpp](../ros2_ws/src/armor_ekf/include/armor_ekf/yaw_ekf.hpp)
-- 最终标注回放：[ekf_tracking_final.mp4](https://github.com/Headhunterz01/2026-vision-assessment/releases/download/2026-season-submission/ekf_tracking_final.mp4)；结果图：[Yaw 曲线](results/ekf_yaw_plot.png)、[代表帧](results/ekf_tracking_sample.png)。
+- 最终标注回放：[ekf_tracking_final.mp4](https://github.com/Headhunterz01/2026-vision-assessment/releases/tag/Video)；结果图：[Yaw 曲线](results/ekf_yaw_plot.png)、[代表帧](results/ekf_tracking_sample.png)。
 - 指标、逐帧数据和对照分析：[metrics.json](results/metrics.json)、[yaw.csv](results/yaw.csv)、[tracking_comparison.json](results/tracking_comparison.json)、[对照说明](results/TRACKING_COMPARISON.md)。
 - 详细算法验证：[VERIFICATION.md](../ros2_ws/src/armor_ekf/VERIFICATION.md)。
 
