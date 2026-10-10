@@ -103,7 +103,7 @@ k0_x, k0_y, k1_x, k1_y, k2_x, k2_y, k3_x, k3_y
 
 本地后处理支持端到端输出，读出类别和角点后仍进行一次框 IoU NMS，且该 C++ NMS 不区分类别。默认检测置信度为 0.25，NMS IoU 为 0.45，关键点显示阈值为 0.5。该输出没有独立角点置信度，代码用目标 `score` 填入各角点 `confidence`，所以显示阈值控制整组角点是否绘制，不能反映单个角点可信度。
 
-Python 视频推理结果可下载：[armors_yolo_test.avi](https://github.com/Headhunterz01/2026-vision-assessment/releases/download/2026-season-submission/armors_yolo_test.avi)。本机副本位于本目录。
+Python 视频推理结果可下载：[armors_yolo_test.avi](https://github.com/Headhunterz01/2026-vision-assessment/releases/tag/Video/armors_yolo_test.avi)。本机副本位于本目录。
 
 ## 4. 结果指标解析
 
