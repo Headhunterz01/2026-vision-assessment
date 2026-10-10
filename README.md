@@ -25,4 +25,4 @@ ROS 构建依赖和工作区构建命令见 [`ros2_ws/README.md`](ros2_ws/README
 | [05 坐标变换](05_坐标变换/README.md) | 相机坐标系到 odom 的姿态变换 |
 | [06 重投影](06_重投影/README.md) | 四装甲板模型与图像重投影 |
 
-原视频和最终结果视频本机保留，但不纳入 Git；上传文件清单、SHA-256 和获取说明见 [`RELEASE_ASSETS.md`](RELEASE_ASSETS.md)。
+原视频和最终结果视频位于release，但不纳入 Git；上传文件清单、SHA-256 和获取说明见 [`RELEASE_ASSETS.md`](RELEASE_ASSETS.md)。
