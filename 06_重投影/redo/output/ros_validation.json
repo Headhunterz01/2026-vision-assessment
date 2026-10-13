@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "synchronized_message_sets": 20,
+  "valid_four_pose_sets": 19,
+  "empty_pose_and_delete_sets": 1,
+  "image_resolution": [
+    1440,
+    1080
+  ],
+  "matched_image_pose_marker_stamps": true
+}

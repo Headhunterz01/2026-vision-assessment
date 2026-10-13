@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+preview/
+*.mp4
+*.jsonl
+*.csv

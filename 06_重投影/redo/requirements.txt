@@ -1,0 +1,5 @@
+numpy>=1.26,<3
+opencv-python-headless>=4.10,<5
+onnxruntime>=1.24,<2
+scipy>=1.11,<2
+imageio-ffmpeg==0.6.0
