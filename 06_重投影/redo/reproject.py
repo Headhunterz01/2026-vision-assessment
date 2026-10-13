@@ -17,6 +17,9 @@ import cv2
 import numpy as np
 from scipy.optimize import least_squares
 
+from image_evidence import extract_lightbars, refine_corners, refine_fit_with_lightbars
+from temporal import CornerSmoother, StateSmoother, VisualMotion
+
 ROOT = Path(__file__).resolve().parents[2]
 K = np.array([[3571.1890927935297, 0, 683.5999418028833],
               [0, 3569.0234714126823, 565.5838917436471], [0, 0, 1]])
@@ -172,6 +175,37 @@ class Detector:
         return unique
 
 
+class DetectionCache:
+    """Replay recorded NN output only; geometry is always recomputed."""
+    def __init__(self, path, model, video, confidence):
+        summary = json.loads((path.parent / 'summary.json').read_text())
+        if Path(summary['source']).resolve() != video.resolve() or Path(summary['model']).resolve() != model.resolve():
+            raise ValueError('Detection cache model/video differs from the requested input')
+        if confidence != summary.get('confidence', .5):
+            raise ValueError('Detection cache confidence differs from the requested threshold')
+        self.stream = path.open()
+        self.row = None
+
+    def frame(self, index):
+        while self.row is None or self.row['frame'] < index:
+            line = self.stream.readline()
+            if not line:
+                raise ValueError(f'Detection cache has no source frame {index}')
+            self.row = json.loads(line)
+        if self.row['frame'] != index:
+            raise ValueError(f'Detection cache has no source frame {index}; check stride')
+        output = []
+        for d in self.row.get('raw_detections', self.row['detections']):
+            item = dict(d)
+            for key in ['corners', 'center', 'box']:
+                item[key] = np.asarray(item[key], np.float64)
+            output.append(item)
+        return output
+
+    def close(self):
+        self.stream.close()
+
+
 def match_others(plates, detections, anchor):
     """One-to-one matching to visible model plates; class labels are not IDs."""
     pairs = []
@@ -199,10 +233,23 @@ class Estimator:
         self.geometry = geometry
         self.last = None
         self.last_time = -1.
+        self.motion = VisualMotion()
+        self.corner_smoother = CornerSmoother()
+        self.state_smoother = StateSmoother()
+        self.processed_detections = []
+        self.motion_px = None
 
-    def estimate(self, detections, stamp):
+    def estimate(self, detections, stamp, image=None):
         if stamp - self.last_time > .3 or stamp <= self.last_time:
             self.last = None
+            self.state_smoother.reset()
+        self.motion_px = self.motion.update(image, detections, stamp)
+        bars, used_bars = [], set()
+        if image is not None:
+            bars = extract_lightbars(image, detections)
+            detections, used_bars = refine_corners(detections, bars)
+            detections = self.corner_smoother.update(detections, stamp, self.motion_px)
+        self.processed_detections = detections
         if not detections:
             return None, 'NO DETECTION'
         candidates = []
@@ -241,6 +288,8 @@ class Estimator:
                     continue
                 fit['anchor'] = anchor
                 fit['matches'] = matches
+                if image is not None:
+                    fit = refine_fit_with_lightbars(self.geometry, fit, detections, bars, used_bars)
                 score = float(np.mean(fit['errors']))
                 if self.last is not None:
                     # Robot yaw is only defined modulo pi/2 when anchor changes.
@@ -262,6 +311,14 @@ class Estimator:
             separation = np.linalg.norm(best['state'][:3] - second['state'][:3])
             if separation > .12 and second['score'] - best['score'] < .25:
                 return None, 'AMBIGUOUS SINGLE PLATE'
+        best['raw_state'], best['raw_rms'] = best['state'].copy(), best['errors'].copy()
+        best['state'], best['temporal_alpha'] = self.state_smoother.update(best['state'], stamp, self.motion_px)
+        best['plates'] = self.geometry.plates(best['state'])
+        best['errors'] = np.array([np.sqrt(np.mean(np.sum((best['plates'][i]['pixels'] - corners)**2, axis=1)))
+                                  for i, corners in best['observations']])
+        for support in best.get('side_support', []):
+            pixels = best['plates'][support['plate']]['pixels'][support['edge']]
+            support['rms'] = float(np.sqrt(np.mean(np.sum((pixels-support['bar'])**2, axis=1))))
         self.last = best['state'].copy()
         self.last_time = stamp
         camera_center = self.geometry.world_from_camera.T @ (best['state'][:3] - self.geometry.camera_origin)
@@ -299,7 +356,7 @@ def draw(image, detections, fit, status, debug=False):
         for p in points:
             cv2.circle(out, tuple(p), 3, (0, 255, 255), -1, cv2.LINE_AA)
     if debug:
-        cv2.putText(out, f'{status} | detected {len(detections)} | cyan: 4-board model / green: NN',
+        cv2.putText(out, f'{status} | detected {len(detections)} | cyan: model / green: refined NN',
                     (15, 28), cv2.FONT_HERSHEY_SIMPLEX, .55, cyan, 1, cv2.LINE_AA)
     return out
 
@@ -333,7 +390,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model', type=Path, default=ROOT / '01_神经网络/yolo_pose/final_model/best.onnx')
     parser.add_argument('--video', type=Path, default=ROOT / '00_题目原件/videos/test.mp4')
-    parser.add_argument('--output', type=Path, default=Path(__file__).parent / 'output')
+    parser.add_argument('--output', type=Path, default=Path(__file__).parent / 'output_fixed')
     parser.add_argument('--profile', choices=['video', 'pdf'], default='video',
                         help='video: gimbal pitch 0rad diagnostic; pdf: exact 1.34rad extrinsics')
     parser.add_argument('--gimbal-pitch-rad', type=float)
@@ -342,12 +399,15 @@ def main():
     parser.add_argument('--confidence', type=float, default=.5)
     parser.add_argument('--threads', type=int, default=2)
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--detections-cache', type=Path,
+                        help='Recorded frames.jsonl from the same NN model/video; re-solve all geometry')
     args = parser.parse_args()
     if args.stride < 1 or args.max_frames < 0 or args.threads < 1 or not 0 < args.confidence < 1:
         parser.error('Invalid stride, max-frames, threads or confidence')
     gimbal = args.gimbal_pitch_rad if args.gimbal_pitch_rad is not None else (0. if args.profile == 'video' else 1.34)
     geometry = Geometry(gimbal)
-    detector = Detector(args.model, args.confidence, args.threads)
+    detector = None if args.detections_cache else Detector(args.model, args.confidence, args.threads)
+    detection_cache = DetectionCache(args.detections_cache, args.model, args.video, args.confidence) if args.detections_cache else None
     estimator = Estimator(geometry)
     capture = cv2.VideoCapture(str(args.video))
     if not capture.isOpened():
@@ -382,10 +442,12 @@ def main():
                 if not ok:
                     raise RuntimeError(f'Failed decoding source frame {frame}')
                 stamp = frame / fps
-                detections = detector(image)
-                fit, status = estimator.estimate(detections, stamp)
+                raw_detections = detection_cache.frame(frame) if detection_cache else detector(image)
+                fit, status = estimator.estimate(raw_detections, stamp, image)
+                detections = estimator.processed_detections
                 reasons[status] = reasons.get(status, 0) + 1
-                data = dict(frame=frame, time=stamp, status=status, detections=detections, model=None)
+                data = dict(frame=frame, time=stamp, status=status, detections=detections,
+                            raw_detections=raw_detections, motion_px=estimator.motion_px, model=None)
                 if fit is not None:
                     valid += 1
                     multi += bool(fit['matches'])
@@ -393,6 +455,9 @@ def main():
                     state = fit['state']
                     data['model'] = dict(center=state[:3], yaw=state[3], anchor=fit['anchor'],
                                          rms=fit['errors'], matches=fit['matches'], plates=fit['plates'])
+                    data['model'].update(side_support=fit.get('side_support', []),
+                                         raw_state=fit['raw_state'], raw_rms=fit['raw_rms'],
+                                         temporal_alpha=fit['temporal_alpha'])
                     if 'center_pixel' in fit:
                         data['model']['center_pixel'] = fit['center_pixel']
                     for p in fit['plates']:
@@ -416,12 +481,16 @@ def main():
     finally:
         video.close()
         capture.release()
+        if detection_cache:
+            detection_cache.close()
     if not count:
         raise RuntimeError('No video frames were processed')
     report = dict(source=str(args.video.resolve()), model=str(args.model.resolve()),
                   profile=args.profile, gimbal_pitch_rad=gimbal, radius_m=.25,
                   inward_pitch_deg=15, roll_deg=0, width_m=.135, height_m=.055,
                   source_fps=fps, output_fps=fps/args.stride, stride=args.stride,
+                  confidence=args.confidence,
+                  inference_source='recorded NN detections' if detection_cache else 'direct ONNX inference',
                   frames=count, valid_model_frames=valid, multi_plate_frames=multi,
                   status_counts=reasons, processing_seconds=time.monotonic()-started,
                   anchor_rms_median_px=float(np.median(errors)) if errors else None,

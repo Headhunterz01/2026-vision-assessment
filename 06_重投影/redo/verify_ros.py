@@ -56,7 +56,7 @@ def main():
                       valid_four_pose_sets=sum(bool(poses[k]) for k in common),
                       empty_pose_and_delete_sets=cleared,
                       image_resolution=[1440, 1080], matched_image_pose_marker_stamps=True)
-        output = Path(__file__).parent / 'output' / 'ros_validation.json'
+        output = Path(__file__).parent / 'output_fixed' / 'ros_validation.json'
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(report, indent=2))

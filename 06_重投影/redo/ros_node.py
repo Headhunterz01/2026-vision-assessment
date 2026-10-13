@@ -80,7 +80,8 @@ class ReprojectionNode(Node):
         if not ok:
             raise RuntimeError('Video decode failed')
         detections = self.detector(image)
-        fit, status = self.estimator.estimate(detections, self.frame / self.source_fps)
+        fit, status = self.estimator.estimate(detections, self.frame / self.source_fps, image)
+        detections = self.estimator.processed_detections
         stamp = self.get_clock().now().to_msg()
         for publisher, pixels in [(self.input_pub, image),
                                   (self.image_pub, draw(image, detections, fit, status, self.args.debug))]:

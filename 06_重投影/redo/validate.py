@@ -25,7 +25,7 @@ def main():
                               [0, .0675, -.0275], [0, .0675, .0275]])
     max_projection = max_transform = max_radius = 0.
     count = valid = 0
-    center_errors, corner_errors, anchor_errors = [], [], []
+    center_errors, corner_errors, anchor_errors, sidebar_errors = [], [], [], []
     previous_frame = -1
     with (args.output / 'frames.jsonl').open() as stream:
         for line in stream:
@@ -72,12 +72,22 @@ def main():
                 observed = np.array(row['detections'][j]['corners'])
                 rms = float(np.sqrt(np.mean(np.sum((predicted - observed)**2, axis=1))))
                 assert abs(rms - model['rms'][n]) < 1e-8
-                assert rms <= (8 if model['matches'] else 3) + 1e-8
+                gate = 8 if model['matches'] else 4 if model.get('side_support') else 3
+                assert rms <= gate + 1e-8, f'Frame {row["frame"]}: current model exceeds observation gate'
                 if i == 0:
                     anchor_errors.append(rms)
                 else:
                     center_errors.append(float(np.linalg.norm(predicted.mean(0) - observed.mean(0))))
                     corner_errors.append(rms)
+            supports = model.get('side_support', [])
+            assert len({s['plate'] for s in supports}) == len(supports)
+            for support in supports:
+                assert support['plate'] in [1, 3] and support['edge'] in [[0, 1], [3, 2]]
+                projected = np.array(model['plates'][support['plate']]['pixels'])[support['edge']]
+                observed = np.array(support['bar'])
+                rms = float(np.sqrt(np.mean(np.sum((projected-observed)**2, axis=1))))
+                assert abs(rms-support['rms']) < 1e-8
+                sidebar_errors.append(rms)
     assert count == summary['frames'] and valid == summary['valid_model_frames']
     assert max_projection < 1e-7 and max_radius < 1e-12 and max_transform < 1e-12
     capture = cv2.VideoCapture(str(args.output / 'reprojection.mp4'))
@@ -96,6 +106,8 @@ def main():
                   other_board_center_median_px=float(np.median(center_errors)) if center_errors else None,
                   other_board_corner_rms_p95_px=float(np.percentile(corner_errors, 95)) if corner_errors else None,
                   anchor_rms_median_px=float(np.median(anchor_errors)) if anchor_errors else None,
+                  observed_sidebar_count=len(sidebar_errors),
+                  observed_sidebar_rms_p95_px=float(np.percentile(sidebar_errors, 95)) if sidebar_errors else None,
                   limitation='Same-frame NN detections used for pose fitting; errors are fit residuals, not independent physical accuracy.')
     (args.output / 'validation.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
