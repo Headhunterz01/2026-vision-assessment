@@ -57,7 +57,7 @@
             └── minimal_example.cpp    # 单图调用示例
 ```
 
-花括号表示多个已有文件的归组，不是实际文件名。原始数据集和测试视频不在本目录；视频附件清单与放置路径见 [`RELEASE_ASSETS.md`](../RELEASE_ASSETS.md)。该清单尚未提供实际 Release 下载链接，复现前需要取得题目附件。
+花括号表示多个已有文件的归组，不是实际文件名。原始数据集和测试视频不在本目录；测试视频由你另行提供，放在 `00_题目原件/videos/armors_yolo_test.mp4`。
 
 ## 3. 技术分析
 
@@ -103,7 +103,7 @@ k0_x, k0_y, k1_x, k1_y, k2_x, k2_y, k3_x, k3_y
 
 本地后处理支持端到端输出，读出类别和角点后仍进行一次框 IoU NMS，且该 C++ NMS 不区分类别。默认检测置信度为 0.25，NMS IoU 为 0.45，关键点显示阈值为 0.5。该输出没有独立角点置信度，代码用目标 `score` 填入各角点 `confidence`，所以显示阈值控制整组角点是否绘制，不能反映单个角点可信度。
 
-Python 视频推理结果可下载：[armors_yolo_test.avi](https://github.com/Headhunterz01/2026-vision-assessment/releases/download/2026-season-submission/armors_yolo_test.avi)。本机副本位于本目录。
+Python 视频推理结果 `armors_yolo_test.avi` 为外部提供的视频文件，本机副本位于本目录，不纳入 Git。
 
 ## 4. 结果指标解析
 
