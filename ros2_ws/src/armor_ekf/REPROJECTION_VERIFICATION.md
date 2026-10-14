@@ -26,7 +26,7 @@ R_out_i = Rz(yaw_pdf_i) Ry(pitch_pdf) Rx(roll_pdf) Rz(π)
 
 ## 运行
 
-在资料根目录执行：
+在资料根目录执行。`reprojection.launch.py` 由单个 `armor_ekf_node` 同时发布输入图像并执行识别、PnP、滤波和重投影：
 
 ```bash
 bash ros2_ws/build_ekf.sh
@@ -73,7 +73,7 @@ ros2 run armor_ekf armor_ekf_replay \
 - 实际 ROS 检查 300 条输出：290 条有效、10 条漏检，300 条源时间戳匹配；290 次四板位置/姿态检查、10 次清除检查通过；TF、世界 Pose/PnP、Marker、标注图均通过。软件渲染 RViz 同时运行，视频输入 60 Hz，观察到算法输出约 13.1 Hz；这不是原视频 100 Hz 实时性能证明。
 - RViz 实际截图已检查，图像、TF、四板及中心正常显示。
 
-验证脚本：`tools/verify_reprojection_replay.py`、`tools/verify_reprojection_ros.py`。可再生成的运行输出写入被忽略的 `ros2_ws/output/`；最终验证数据和代表帧整理在 [`06_重投影/results/`](../../../06_重投影/results/)，完整视频作为 Release 附件。
+验证脚本：`tools/verify_reprojection_replay.py`、`tools/verify_reprojection_ros.py`。可再生成的运行输出写入被忽略的 `ros2_ws/output/`；最终验证数据和代表帧整理在 [`06_重投影/results/`](../../../06_重投影/results/)，完整视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 
 ## 实拍偏差与外参对照
 
@@ -103,7 +103,7 @@ ros2 launch armor_ekf reprojection.launch.py \
 
 ## 查看成果
 
-- [最终视频的 Release 清单](../../../RELEASE_ASSETS.md)
+- `test.mp4` 由你另行提供，放在 `00_题目原件/videos/`。
 - [默认验证数据](../../../06_重投影/results/validation.json)
 - [对照验证数据](../../../06_重投影/results/initial_comparison_validation.json)
 - [ROS 验证数据](../../../06_重投影/results/pose_selection_ros_report.json)

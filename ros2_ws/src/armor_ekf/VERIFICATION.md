@@ -44,6 +44,6 @@
 
 ## 输出与限制
 
-提交版结果保存在 [`04_EKF/results/`](../../../04_EKF/results/)：曲线、代表帧、指标、逐帧 CSV、同输入关联对照和 ROS 报告。最终标注视频作为 Release 附件 `ekf_tracking_final.mp4`，本机副本也在该目录。完整检测缓存和中间回放放在被忽略的 `ros2_ws/output/`，可按 [`armor_ekf/README.md`](README.md) 的命令重建。
+提交版结果保存在 [`04_EKF/results/`](../../../04_EKF/results/)：曲线、代表帧、指标、逐帧 CSV、同输入关联对照和 ROS 报告。最终标注视频 `ekf_tracking_final.mp4` 由你另行提供，本机副本也在该目录；视频不纳入 Git。完整检测缓存和中间回放放在被忽略的 `ros2_ws/output/`，可按 [`armor_ekf/README.md`](README.md) 的命令重建。
 
 没有真实 Yaw 或永久物理板身份标注。合成身份测试和实拍抽查支持短期关联行为，不能证明长时间遮挡后的永久身份或绝对 Yaw 精度。平面 PnP 仍存在歧义；本阶段输出是相机视角的装甲板 Yaw，连续机器人世界 Yaw 的坐标变换属于后续考核。

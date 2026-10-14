@@ -39,7 +39,7 @@
 
 ## 运行和复现
 
-从 GitHub Release 下载 `test.mp4`，放回 `00_题目原件/videos/`；从资料根目录运行：
+取得另行提供的 `test.mp4`，放入 `00_题目原件/videos/`；从资料根目录运行。`world.launch.py` 由单个 `armor_ekf_node` 同时发布视频图像并处理同一帧：
 
 ```bash
 bash ros2_ws/build_ekf.sh
@@ -82,7 +82,7 @@ python_env/.venv/bin/python ros2_ws/src/armor_ekf/tools/verify_world_replay.py \
 
 ## 输出
 
-`05_坐标变换/results/` 保存提交版的曲线、代表帧、CSV、指标、验证数据和 ROS 报告。完整 `world_yaw.mp4` 是 Release 附件。本机运行命令把可再生成的缓存写入被忽略的 `ros2_ws/output/`。
+`05_坐标变换/results/` 保存提交版的曲线、代表帧、CSV、指标、验证数据和 ROS 报告。完整 `world_yaw.mp4` 由你另行提供，不纳入 Git。本机运行命令把可再生成的缓存写入被忽略的 `ros2_ws/output/`。
 
 - `world_yaw.mp4`、`world_yaw_plot.png`、`world_yaw_sample.png`、`yaw.csv`、`metrics.json`、`replay_validation.json`、`filter_diagnostics.json`。
 - `camera_regression/yaw.csv`、`direct_world/yaw.csv`及直接推理检测缓存。

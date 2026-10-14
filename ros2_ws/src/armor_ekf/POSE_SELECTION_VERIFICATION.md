@@ -1,6 +1,6 @@
 # 重投影跳框修复
 
-日期：2026-10-09。此页记录 `REPROJECTION_VERIFICATION.md` 初版后，对实拍中预测板飞到机身外和静止机甲上的投影抖动的修复。初版数值验证保存在 [`06_重投影/results/initial_comparison_validation.json`](../../../06_重投影/results/initial_comparison_validation.json)；不保留可再生成的初版整段视频和缓存。修复后的结果图、验证数据位于 [`06_重投影/results/`](../../../06_重投影/results/)，最终视频作为 Release 附件 `four_plate_reprojection.mp4`。
+日期：2026-10-09。此页记录 `REPROJECTION_VERIFICATION.md` 初版后，对实拍中预测板飞到机身外和静止机甲上的投影抖动的修复。初版数值验证保存在 [`06_重投影/results/initial_comparison_validation.json`](../../../06_重投影/results/initial_comparison_validation.json)；不保留可再生成的初版整段视频和缓存。修复后的结果图、验证数据位于 [`06_重投影/results/`](../../../06_重投影/results/)；最终视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 
 ## 原因与修改
 
@@ -52,7 +52,7 @@ rviz2 -d ros2_ws/rviz/armor_reprojection.rviz
 
 `rviz2` 在另一个终端运行并加载相同 ROS 环境。图像话题为 `/armor/reproject/image_raw`。
 
-- [最终视频的 Release 清单](../../../RELEASE_ASSETS.md)
+- 最终视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 - [截图对应帧](../../../06_重投影/results/frame_0978.png)
 - [完整回放数值验证](../../../06_重投影/results/validation.json)
 - [初版数值对照](../../../06_重投影/results/initial_comparison_validation.json)

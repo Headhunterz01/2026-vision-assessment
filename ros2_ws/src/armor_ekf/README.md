@@ -13,7 +13,7 @@
 - `include/armor_ekf/yaw_ekf.hpp`：角度滤波器。
 - `include/armor_ekf/motion_tracker.hpp`：图像中心/速度 Kalman 预测与多目标一对一分配。
 - `src/replay.cpp`：同一检测缓存的新旧关联回放。
-- `src/node.cpp`：订阅图像，发布消息和标注图像。
+- `src/node.cpp`：集成视频帧读取与原始图像发布、YOLO/PnP、EKF、自定义消息和标注图像发布；也支持订阅外部相机图像。
 - `src/offline.cpp`：与 ROS 节点共用同一套核心代码的离线视频运行器。
 - `config/ekf.yaml`：相机、尺寸、噪声、置信度及角点顺序配置。
 
@@ -31,7 +31,7 @@ source "$HOME/armor_ekf_runtime/install/setup.bash"
 
 ROS 消息生成器在此机器上读取含中文路径的中间文件时会失败，因此脚本创建 `~/armor_ekf_ws` 源码路径别名，并使用实际英文目录 `~/armor_ekf_runtime/{build,install,log}`。源码仍保存在原资料目录。`ARMOR_EKF_RUNTIME` 可以覆盖运行目录，覆盖时应使用英文实际路径。
 
-## 联合运行
+## 一体化 ROS 2 节点运行
 
 从资料根目录执行：
 
@@ -42,7 +42,7 @@ ros2 launch armor_ekf ekf.launch.py \
   fps:=20.0 loop:=true
 ```
 
-`fps` 控制回放速度；`test.mp4` 原始帧率约为 100 Hz，`fps:=0.0` 使用原始帧率。节点图像队列只保留最新一帧，推理较慢时会跳过旧图像，按收到图像的时间戳推进 EKF。ROS 中的角速度对应当前回放时间，降低回放帧率会降低其数值；离线程序使用原始视频时间。
+同一个 `armor_ekf_node` 读取视频并发布 `/armor/image_raw`，然后对该帧直接执行 YOLO、PnP 和 EKF，发布自定义消息及标注图像，不需要启动第二个视频发布节点。`fps` 控制回放速度；`fps:=0.0` 使用视频原始帧率，`loop:=true` 可循环播放。ROS 中的角速度对应当前回放时间，降低回放帧率会降低其数值；离线程序使用原始视频时间。
 
 只运行算法节点、接入已有图像发布器：
 
@@ -120,7 +120,7 @@ python_env/.venv/bin/python ros2_ws/src/armor_ekf/tools/plot_yaw.py ros2_ws/outp
 
 `--stride 2` 覆盖完整视频并每两帧处理一次，输出视频保持原时间长度。`--stride 1` 处理所有帧；`--no-video` 只输出 CSV 和统计；`--max-frames N` 可用于短段运行。CSV 和视频使用同一帧的检测、PnP 和滤波结果。
 
-离线推理会同时生成 `detections.csv`，保存所有去重后的候选框、角点、类别、置信度与原始时间。回放通过同一 C++ PnP/关联/EKF 代码处理这些检测，不再执行网络推理，检测前端统计字段 `-1` 表示本次未执行该阶段。首次回放前，先从 Release 下载 `test.mp4` 并放回 `00_题目原件/videos/`。以下命令会生成可再生成的检测缓存（输出目录受 Git 忽略）：
+离线推理会同时生成 `detections.csv`，保存所有去重后的候选框、角点、类别、置信度与原始时间。回放通过同一 C++ PnP/关联/EKF 代码处理这些检测，不再执行网络推理，检测前端统计字段 `-1` 表示本次未执行该阶段。首次回放前，先取得你另行提供的 `test.mp4` 并放入 `00_题目原件/videos/`。以下命令会生成可再生成的检测缓存（输出目录受 Git 忽略）：
 
 ```bash
 ros2 run armor_ekf armor_ekf_offline \
@@ -164,7 +164,7 @@ python3 ros2_ws/src/armor_ekf/tools/verify_ros.py --output-dir ros2_ws/output/ro
 
 验证覆盖 EKF 噪声抑制、±π 跨越、协方差、异常观测门限、漏检预测及重置，以及同类别交叉、短期遮挡、运动重关联、过期目标切换与一对一分配；用合成角点检查 PnP 的位置、角度符号和重投影；ROS 验证接收真实自定义消息并检查姿态四元数与 Yaw 一致、时间戳、方差及标注图像。
 
-完整同输入对照的选中目标有效观测覆盖率从 51.08% 提升到 72.38%，2263 / 2280 条观测进入 EKF；216 次视觉轨迹切换均明确初始化滤波。结果与限制见 [`VERIFICATION.md`](VERIFICATION.md) 和 [`04_EKF/results/`](../../../04_EKF/results/)。完整标注视频作为 Release 附件提供。实拍视频没有真实角度或永久物理身份标签，因此覆盖率、重投影误差和曲线平滑程度不能当作绝对 Yaw 或永久身份精度。
+完整同输入对照的选中目标有效观测覆盖率从 51.08% 提升到 72.38%，2263 / 2280 条观测进入 EKF；216 次视觉轨迹切换均明确初始化滤波。结果与限制见 [`VERIFICATION.md`](VERIFICATION.md) 和 [`04_EKF/results/`](../../../04_EKF/results/)。完整标注视频 `ekf_tracking_final.mp4` 由你另行提供，不纳入 Git。实拍视频没有真实角度或永久物理身份标签，因此覆盖率、重投影误差和曲线平滑程度不能当作绝对 Yaw 或永久身份精度。
 
 ## 来源
 
@@ -176,10 +176,10 @@ python3 ros2_ws/src/armor_ekf/tools/verify_ros.py --output-dir ros2_ws/output/ro
 
 ## 世界坐标变换
 
-新增 `world.launch.py`：PnP姿态经考核给定的三段静态外参转到odom，提取世界Yaw后进入EKF，同时发布 `/armor/world_yaw`、完整世界姿态、TF链与RViz Marker。原 `ekf.launch.py` 保持相机系模式。
+`world.launch.py` 在同一 `armor_ekf_node` 内读取并发布视频帧，PnP姿态经考核给定的三段静态外参转到odom，提取世界Yaw后进入EKF，同时发布 `/armor/world_yaw`、完整世界姿态、TF链与RViz Marker。`ekf.launch.py` 保持相机系模式。
 
 完整运行命令、验证结果和限制见 [WORLD_VERIFICATION.md](WORLD_VERIFICATION.md)。RViz配置为 `ros2_ws/rviz/armor_world.rviz`；最终数据与代表帧位于 [`05_坐标变换/results/`](../../../05_坐标变换/results/)；可再生成的回放缓存位于被忽略的 `ros2_ws/output/`。
 
 ## 四装甲板重投影
 
-已接入重投影考核，提供独立启动文件、PoseArray、MarkerArray、CSV 和视频。运行、坐标约定与实拍外参限制见 [REPROJECTION_VERIFICATION.md](REPROJECTION_VERIFICATION.md)，跳框修复及最新验证见 [POSE_SELECTION_VERIFICATION.md](POSE_SELECTION_VERIFICATION.md)。
+`reprojection.launch.py` 也在同一节点内完成视频发布、识别、滤波与四板重投影，输出 PoseArray、MarkerArray 和标注图。运行、坐标约定与实拍外参限制见 [REPROJECTION_VERIFICATION.md](REPROJECTION_VERIFICATION.md)，跳框修复及最新验证见 [POSE_SELECTION_VERIFICATION.md](POSE_SELECTION_VERIFICATION.md)。

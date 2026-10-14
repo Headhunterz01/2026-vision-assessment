@@ -8,7 +8,9 @@
 #include <geometry_msgs/msg/pose_array.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 #include <opencv2/calib3d.hpp>
+#include <opencv2/videoio.hpp>
 #include <chrono>
+#include <filesystem>
 
 namespace armor_ekf {
 class ArmorEkfNode : public rclcpp::Node {
@@ -54,6 +56,10 @@ public:
     publish_debug_ = declare_parameter("publish_debug", true);
     pipeline_ = std::make_unique<Pipeline>(c);
     const auto input_topic = declare_parameter<std::string>("image_topic", "/armor/image_raw");
+    const auto video_path = declare_parameter<std::string>("video_path", "");
+    const auto video_frame_id = declare_parameter<std::string>("frame_id", "camera_optical_frame");
+    const auto video_loop = declare_parameter<bool>("loop", false);
+    const auto requested_fps = declare_parameter<double>("fps", 0.0);
     world_mode_ = c.yaw_frame == "odom";
     reproject_mode_ = c.reprojection.enabled;
     if (reproject_mode_) {
@@ -82,12 +88,50 @@ public:
       }
       static_tf_->sendTransform(transforms);
     }
-    // Only retain the newest image if inference is slower than the source video.
-    input_ = create_subscription<sensor_msgs::msg::Image>(input_topic, rclcpp::SensorDataQoS().keep_last(1),
-      [this](sensor_msgs::msg::Image::ConstSharedPtr msg) { process(msg); });
+    if (!video_path.empty()) {
+      if (!std::filesystem::is_regular_file(video_path))
+        throw std::invalid_argument("video_path does not name a file: " + video_path);
+      video_.open(video_path);
+      if (!video_.isOpened()) throw std::runtime_error("cannot open video: " + video_path);
+      auto fps = requested_fps > 0.0 ? requested_fps : video_.get(cv::CAP_PROP_FPS);
+      if (!(fps > 0.0)) fps = 30.0;
+      video_loop_ = video_loop;
+      frame_id_ = video_frame_id;
+      image_input_ = create_publisher<sensor_msgs::msg::Image>(input_topic, rclcpp::QoS(10).reliable());
+      video_timer_ = create_wall_timer(std::chrono::duration<double>(1.0 / fps), [this]() { publishVideoFrame(); });
+      RCLCPP_INFO(get_logger(), "integrated video source publishing and processing %s on %s at %.2f FPS",
+                  video_path.c_str(), input_topic.c_str(), fps);
+    } else {
+      // Camera/external source mode. Only retain the newest image if inference is slower than the source.
+      input_ = create_subscription<sensor_msgs::msg::Image>(input_topic, rclcpp::SensorDataQoS().keep_last(1),
+        [this](sensor_msgs::msg::Image::ConstSharedPtr msg) { process(msg); });
+    }
     RCLCPP_INFO(get_logger(), "YOLO Pose + IPPE PnP + circular EKF ready; yaw frame: %s; model: %s", c.yaw_frame.c_str(), c.model_path.c_str());
   }
 private:
+  void publishVideoFrame() {
+    cv::Mat frame;
+    if (!video_.read(frame) || frame.empty()) {
+      if (!video_loop_) {
+        RCLCPP_INFO(get_logger(), "video finished");
+        video_timer_->cancel();
+        return;
+      }
+      video_.set(cv::CAP_PROP_POS_FRAMES, 0);
+      if (!video_.read(frame) || frame.empty()) {
+        RCLCPP_ERROR(get_logger(), "failed to read video frame");
+        video_timer_->cancel();
+        return;
+      }
+    }
+    auto message = cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", frame).toImageMsg();
+    message->header.stamp = now();
+    message->header.frame_id = frame_id_;
+    image_input_->publish(*message);
+    // Process the very same frame in this node; no ROS topic round-trip or second inference node is needed.
+    process(message);
+  }
+
   void process(const sensor_msgs::msg::Image::ConstSharedPtr & image_msg) {
     try {
       if (image_msg->header.frame_id != "camera_optical_frame")
@@ -182,6 +226,11 @@ private:
     poses_->publish(poses); projection_markers_->publish(markers);
   }
   std::unique_ptr<Pipeline> pipeline_;
+  cv::VideoCapture video_;
+  bool video_loop_ = false;
+  std::string frame_id_ = "camera_optical_frame";
+  rclcpp::TimerBase::SharedPtr video_timer_;
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_input_;
   bool publish_debug_;
   bool world_mode_ = false, reproject_mode_ = false;
   rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr poses_;
