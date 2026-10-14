@@ -11,9 +11,14 @@
 /ros2_ws/deps/
 /ros2_ws/output/
 
-# Large media distributed separately as GitHub Release assets
+# Media supplied separately and kept out of Git
 /00_题目原件/videos/*.mp4
 /01_神经网络/results/*.avi
 /04_EKF/results/*.mp4
 /05_坐标变换/results/*.mp4
 /06_重投影/results/*.mp4
+
+# Notebook checkpoints, local colcon logs, and generated source archive
+**/.ipynb_checkpoints/
+/log/
+/01_神经网络/yolo_pose/YOLO_Pose_OpenVINO_C_Inference.zip

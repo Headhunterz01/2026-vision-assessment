@@ -1,6 +1,6 @@
 # 题目原件
 
 - [`暑假考核.pdf`](暑假考核.pdf)：官方考核说明、参数和参考资料链接。
-- 原始视频本机副本在 `videos/`，也可从 Release 下载：[神经网络测试视频](https://github.com/Headhunterz01/2026-vision-assessment/releases/download/2026-season-submission/armors_yolo_test.mp4)、[ROS 2 测试视频](https://github.com/Headhunterz01/2026-vision-assessment/releases/download/2026-season-submission/test.mp4)。文件大小与校验值见 [`RELEASE_ASSETS.md`](../RELEASE_ASSETS.md)。
+- 题目视频由你另行提供，不纳入 Git。将 `armors_yolo_test.mp4` 和 `test.mp4` 放在本目录的 `videos/` 中。
 
 其余重复题面截图未保留，完整题面以 PDF 为准。
