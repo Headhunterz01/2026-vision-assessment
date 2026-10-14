@@ -241,10 +241,10 @@ def compare(paths):
 def main():
     here = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('paths', type=Path, nargs='*', help='One or two frames.jsonl paths; defaults to output and output_fixed')
+    parser.add_argument('paths', type=Path, nargs='+', help='One or two frames.jsonl paths to compare')
     parser.add_argument('--output', type=Path, help='Save report JSON in addition to stdout')
     args = parser.parse_args()
-    paths = args.paths or [here / 'output/frames.jsonl', here / 'output_fixed/frames.jsonl']
+    paths = args.paths
     if not 1 <= len(paths) <= 2:
         parser.error('Provide one baseline path or two baseline/fixed paths')
     report = compare(paths)

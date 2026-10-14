@@ -1,6 +1,8 @@
-# 重投影跳框修复
+# 历史版 C++ ROS 重投影跳框修复
 
-日期：2026-10-09。此页记录 `REPROJECTION_VERIFICATION.md` 初版后，对实拍中预测板飞到机身外和静止机甲上的投影抖动的修复。初版数值验证保存在 [`06_重投影/results/initial_comparison_validation.json`](../../../06_重投影/results/initial_comparison_validation.json)；不保留可再生成的初版整段视频和缓存。修复后的结果图、验证数据位于 [`06_重投影/results/`](../../../06_重投影/results/)；最终视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
+> 本文记录旧 `armor_ekf` C++ 实现的修复过程；该实现已被 [考核六当前重投影实现](../../../06_重投影/README.md) 取代。请以考核目录中的新源码、回放与验证数据为准。
+
+日期：2026-10-09。此页记录 `REPROJECTION_VERIFICATION.md` 初版后，对实拍中预测板飞到机身外和静止机甲上的投影抖动的修复。初版数值验证保存在 [`06_重投影/results/stability_comparison.json`](../../../06_重投影/results/stability_comparison.json)；不保留可再生成的初版整段视频和缓存。当前实现的结果图、验证数据位于 [`06_重投影/results/`](../../../06_重投影/results/)；最终视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 
 ## 原因与修改
 
@@ -42,7 +44,7 @@ PDF 的云台 Pitch=1.34 rad 与此视频明显不吻合。保留该外参时，
 
 ```bash
 bash ros2_ws/build_ekf.sh
-source /home/seb/armor_ekf_runtime/install/setup.bash
+source "$HOME/armor_ekf_runtime/install/setup.bash"
 ros2 launch armor_ekf reprojection.launch.py \
   model_path:="$PWD/01_神经网络/yolo_pose/final_model/best.onnx" \
   video_path:="$PWD/00_题目原件/videos/test.mp4" \
@@ -55,6 +57,5 @@ rviz2 -d ros2_ws/rviz/armor_reprojection.rviz
 - 最终视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 - [截图对应帧](../../../06_重投影/results/frame_0978.png)
 - [完整回放数值验证](../../../06_重投影/results/validation.json)
-- [初版数值对照](../../../06_重投影/results/initial_comparison_validation.json)
-- [ROS 在线验证](../../../06_重投影/results/pose_selection_ros_report.json)
-- [RViz 截图](../../../06_重投影/results/rviz_reprojection.png)
+- [当前稳定性对照](../../../06_重投影/results/stability_comparison.json)
+- [当前 ROS 在线验证](../../../06_重投影/results/ros_validation.json)

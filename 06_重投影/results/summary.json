@@ -1,6 +1,6 @@
 {
-  "source": "/home/seb/桌面/2026赛季视觉组考核资料/00_题目原件/videos/test.mp4",
-  "model": "/home/seb/桌面/2026赛季视觉组考核资料/01_神经网络/yolo_pose/final_model/best.onnx",
+  "source": "00_题目原件/videos/test.mp4",
+  "model": "01_神经网络/yolo_pose/final_model/best.onnx",
   "profile": "video",
   "gimbal_pitch_rad": 0.0,
   "radius_m": 0.25,

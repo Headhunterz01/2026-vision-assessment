@@ -7,7 +7,7 @@
     "Blue-bar RMS is independently recomputed from logged endpoints and final model projection; source extraction is not rerun."
   ],
   "outputs": {
-    "/home/seb/桌面/2026赛季视觉组考核资料/06_重投影/redo/output/frames.jsonl": {
+    "baseline_before_temporal_fix": {
       "initial_stationary": {
         "window_seconds": [
           0.0,
@@ -279,7 +279,7 @@
         "blue_bar_support_details": []
       }
     },
-    "/home/seb/桌面/2026赛季视觉组考核资料/06_重投影/redo/output_fixed/frames.jsonl": {
+    "final_stable_implementation": {
       "initial_stationary": {
         "window_seconds": [
           0.0,

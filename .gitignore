@@ -17,6 +17,7 @@
 /04_EKF/results/*.mp4
 /05_坐标变换/results/*.mp4
 /06_重投影/results/*.mp4
+/06_重投影/results/generated*/
 
 # Notebook checkpoints, local colcon logs, and generated source archive
 **/.ipynb_checkpoints/

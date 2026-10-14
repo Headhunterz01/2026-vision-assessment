@@ -1,6 +1,8 @@
-# 四装甲板重投影：实现与验证
+# 历史版 C++ ROS 重投影：实现与验证
 
-**更新：** 跳框问题已分析并修复，现行结果请先看 [姿态选解与跳框修复](POSE_SELECTION_VERIFICATION.md)。下文保留初版实现和对照数据。
+> 本文记录早期共享 `armor_ekf` 包中的重投影实现，已由 [考核六当前实现](../../../06_重投影/README.md) 取代。此文只作为历史设计记录；答辩和复现请使用考核目录中的源码与结果。
+
+**历史说明：** 下文是已被考核六独立实现取代的早期 C++ 流程，不代表当前运行入口。
 
 日期：2026-10-09。已实现考核要求的“由一块板推算四块板，再投影到图像”，完成构建、4 项 CTest、完整缓存回放、500 帧直接推理及 ROS/RViz 验证。数学与消息验证通过；PDF 给定外参下的实拍轮廓吻合度较差，需要实际相机/云台外参才能进一步确认物理准确度。
 
@@ -30,7 +32,7 @@ R_out_i = Rz(yaw_pdf_i) Ry(pitch_pdf) Rx(roll_pdf) Rz(π)
 
 ```bash
 bash ros2_ws/build_ekf.sh
-source /home/seb/armor_ekf_runtime/install/setup.bash
+source "$HOME/armor_ekf_runtime/install/setup.bash"
 ros2 launch armor_ekf reprojection.launch.py \
   model_path:="$PWD/01_神经网络/yolo_pose/final_model/best.onnx" \
   video_path:="$PWD/00_题目原件/videos/test.mp4" fps:=30 loop:=true
@@ -73,7 +75,7 @@ ros2 run armor_ekf armor_ekf_replay \
 - 实际 ROS 检查 300 条输出：290 条有效、10 条漏检，300 条源时间戳匹配；290 次四板位置/姿态检查、10 次清除检查通过；TF、世界 Pose/PnP、Marker、标注图均通过。软件渲染 RViz 同时运行，视频输入 60 Hz，观察到算法输出约 13.1 Hz；这不是原视频 100 Hz 实时性能证明。
 - RViz 实际截图已检查，图像、TF、四板及中心正常显示。
 
-验证脚本：`tools/verify_reprojection_replay.py`、`tools/verify_reprojection_ros.py`。可再生成的运行输出写入被忽略的 `ros2_ws/output/`；最终验证数据和代表帧整理在 [`06_重投影/results/`](../../../06_重投影/results/)，完整视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
+验证脚本：`tools/verify_reprojection_replay.py`、`tools/verify_reprojection_ros.py`。可再生成的运行输出写入被忽略的 `ros2_ws/output/`；历史验证数据已由当前结果替代；请查看 [`06_重投影/results/`](../../../06_重投影/results/)，完整视频 `four_plate_reprojection.mp4` 由你另行提供，不纳入 Git。
 
 ## 实拍偏差与外参对照
 
@@ -105,8 +107,7 @@ ros2 launch armor_ekf reprojection.launch.py \
 
 - `test.mp4` 由你另行提供，放在 `00_题目原件/videos/`。
 - [默认验证数据](../../../06_重投影/results/validation.json)
-- [对照验证数据](../../../06_重投影/results/initial_comparison_validation.json)
-- [ROS 验证数据](../../../06_重投影/results/pose_selection_ros_report.json)
-- [RViz 截图](../../../06_重投影/results/rviz_reprojection.png)
+- [当前稳定性对照汇总](../../../06_重投影/results/stability_comparison.json)
+- [当前 ROS 验证数据](../../../06_重投影/results/ros_validation.json)
 
 工程功能已完成。姿态歧义的多板约束见上方修复报告；实际相机到世界/云台的姿态仍需标定，不能把当前诊断参数当成真实外参直接用于机器人。

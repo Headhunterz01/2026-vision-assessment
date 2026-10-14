@@ -10,6 +10,6 @@ if [[ "${1:-}" == ros ]]; then
   set +u
   source /opt/ros/lyrical/setup.bash
   set -u
-  exec "$task_dir/.venv/bin/python" "$task_dir/ros_node.py" "$@"
+  exec "$task_dir/.venv/bin/python" "$task_dir/src/ros_node.py" "$@"
 fi
-exec "$task_dir/.venv/bin/python" "$task_dir/reproject.py" "$@"
+exec "$task_dir/.venv/bin/python" "$task_dir/src/reproject.py" "$@"

@@ -16,7 +16,7 @@ def main():
     parser.add_argument('--require-clear', action='store_true')
     args = parser.parse_args()
     rclpy.init()
-    node = rclpy.create_node('verify_armor_reprojection_redo')
+    node = rclpy.create_node('verify_armor_reprojection')
     poses, images, markers = {}, {}, {}
     def key(msg):
         return msg.header.stamp.sec, msg.header.stamp.nanosec
@@ -37,9 +37,9 @@ def main():
     def marker(msg):
         assert len(msg.markers) == 5
         markers[key(msg.markers[0])] = [m.action for m in msg.markers]
-    subscriptions = [node.create_subscription(PoseArray, '/armor/redo/poses', pose, 10),
-                     node.create_subscription(Image, '/armor/redo/image_raw', image, 1),
-                     node.create_subscription(MarkerArray, '/armor/redo/markers', marker, 10)]
+    subscriptions = [node.create_subscription(PoseArray, '/armor/reprojection/poses', pose, 10),
+                     node.create_subscription(Image, '/armor/reprojection/image_raw', image, 1),
+                     node.create_subscription(MarkerArray, '/armor/reprojection/markers', marker, 10)]
     start = time.monotonic()
     try:
         while time.monotonic() - start < 40 and len(poses.keys() & images.keys() & markers.keys()) < 20:
@@ -56,7 +56,7 @@ def main():
                       valid_four_pose_sets=sum(bool(poses[k]) for k in common),
                       empty_pose_and_delete_sets=cleared,
                       image_resolution=[1440, 1080], matched_image_pose_marker_stamps=True)
-        output = Path(__file__).parent / 'output_fixed' / 'ros_validation.json'
+        output = Path(__file__).resolve().parents[1] / 'results' / 'generated' / 'ros_validation.json'
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(report, indent=2))

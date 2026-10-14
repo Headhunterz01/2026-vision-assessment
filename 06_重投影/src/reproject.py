@@ -390,7 +390,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model', type=Path, default=ROOT / '01_神经网络/yolo_pose/final_model/best.onnx')
     parser.add_argument('--video', type=Path, default=ROOT / '00_题目原件/videos/test.mp4')
-    parser.add_argument('--output', type=Path, default=Path(__file__).parent / 'output_fixed')
+    parser.add_argument('--output', type=Path, default=Path(__file__).resolve().parents[1] / 'results' / 'generated')
     parser.add_argument('--profile', choices=['video', 'pdf'], default='video',
                         help='video: gimbal pitch 0rad diagnostic; pdf: exact 1.34rad extrinsics')
     parser.add_argument('--gimbal-pitch-rad', type=float)

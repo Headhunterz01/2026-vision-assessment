@@ -19,7 +19,7 @@ from reproject import Detector, Estimator, Geometry, OBJECT, ROOT, draw, ry
 
 class ReprojectionNode(Node):
     def __init__(self, args):
-        super().__init__('armor_reprojection_redo')
+        super().__init__('armor_reprojection')
         self.args = args
         self.geometry = Geometry(0. if args.profile == 'video' else 1.34)
         self.estimator = Estimator(self.geometry)
@@ -34,10 +34,10 @@ class ReprojectionNode(Node):
         if not self.source_fps > 0:
             raise ValueError('Invalid source FPS')
         self.bridge = CvBridge()
-        self.input_pub = self.create_publisher(Image, '/armor/redo/source', 1)
-        self.image_pub = self.create_publisher(Image, '/armor/redo/image_raw', 1)
-        self.pose_pub = self.create_publisher(PoseArray, '/armor/redo/poses', 10)
-        self.marker_pub = self.create_publisher(MarkerArray, '/armor/redo/markers', 10)
+        self.input_pub = self.create_publisher(Image, '/armor/reprojection/source', 1)
+        self.image_pub = self.create_publisher(Image, '/armor/reprojection/image_raw', 1)
+        self.pose_pub = self.create_publisher(PoseArray, '/armor/reprojection/poses', 10)
+        self.marker_pub = self.create_publisher(MarkerArray, '/armor/reprojection/markers', 10)
         self.tf = StaticTransformBroadcaster(self)
         self.publish_tf()
         self.capture.set(cv2.CAP_PROP_POS_FRAMES, args.start_frame)
@@ -45,7 +45,7 @@ class ReprojectionNode(Node):
         self.processed = self.valid = 0
         self.finished = False
         self.timer = self.create_timer(1. / args.fps, self.tick)
-        self.get_logger().info(f'NN model: {args.model}; profile={args.profile}; output=/armor/redo/image_raw')
+        self.get_logger().info(f'NN model: {args.model}; profile={args.profile}; output=/armor/reprojection/image_raw')
 
     def publish_tf(self):
         camera_link_from_optical = np.array([[0, 0, 1.], [-1., 0, 0], [0, -1., 0]])
@@ -94,7 +94,7 @@ class ReprojectionNode(Node):
         for i in range(5):
             marker = Marker()
             marker.header = poses.header
-            marker.ns, marker.id = 'four_armors_redo', i
+            marker.ns, marker.id = 'four_armors', i
             marker.action = Marker.ADD if fit is not None else Marker.DELETE
             marker.pose.orientation.w = 1.
             marker.color.a = 1.
